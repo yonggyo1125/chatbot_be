@@ -1,8 +1,8 @@
 package org.koreait.chatbot.services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.koreait.chatbot.entities.ChatData;
 import org.koreait.global.configs.PythonProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Lazy;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Lazy
@@ -23,7 +22,7 @@ public class ChatService {
     private final WebApplicationContext ctx;
     private final ObjectMapper om;
 
-    public List<String[]> process(String message) {
+    public ChatData process(String message) {
 
         try {
 
@@ -47,7 +46,7 @@ public class ChatService {
                 if (statusCode == 0) {
                     String json = process.inputReader().lines().collect(Collectors.joining());
 
-                    return om.readValue(json, new TypeReference<>() {});
+                    return om.readValue(json, ChatData.class);
                 } else {
                     System.out.println("statusCode:" + statusCode);
                     process.errorReader().lines().forEach(System.out::println);
@@ -58,6 +57,6 @@ public class ChatService {
             e.printStackTrace();
         }
 
-        return List.of();
+        return null;
     }
 }
